@@ -117,6 +117,7 @@ async def start_sweep(p: SweepParams) -> JSONResponse:
     if _state["running"]:
         return JSONResponse({"error": "already running"}, status_code=409)
     _state.update(running=True, stats=[], log=[], meta=p.model_dump())
+    await publish("start", {"kind": "sweep"})
     _task = asyncio.create_task(_run_sweep(p))
     return JSONResponse({"ok": True})
 
@@ -127,6 +128,7 @@ async def start_run(p: RunParams) -> JSONResponse:
     if _state["running"]:
         return JSONResponse({"error": "already running"}, status_code=409)
     _state.update(running=True, log=[], meta=p.model_dump())
+    await publish("start", {"kind": "run"})
     _task = asyncio.create_task(_run_single(p))
     return JSONResponse({"ok": True})
 
