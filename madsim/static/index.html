@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MAD Sim — Jev as decision-maker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#0b0f14; --panel:#121923; --fg:#d8e1ea; --muted:#7f8ea1; --acc:#ff5f3c; --ok:#3ccf91; --warn:#ffcc4d; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { padding:14px 22px; border-bottom:1px solid #1f2a38; display:flex; gap:16px; align-items:baseline; }
+  header h1 { margin:0; font-size:18px; letter-spacing:.5px; }
+  header span { color:var(--muted); }
+  main { display:grid; grid-template-columns: 340px 1fr; gap:14px; padding:14px 22px; }
+  .panel { background:var(--panel); border:1px solid #1f2a38; border-radius:10px; padding:14px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+  label { display:block; margin:8px 0 3px; color:var(--muted); font-size:12px; }
+  input, select { width:100%; background:#0b1119; color:var(--fg); border:1px solid #27354a; border-radius:6px; padding:7px 8px; font-size:13px; }
+  button { background:var(--acc); color:#fff; border:0; border-radius:6px; padding:9px 12px; font-weight:600; cursor:pointer; margin-top:10px; width:100%; }
+  button.secondary { background:#27354a; }
+  button:disabled { opacity:.5; cursor:default; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .stack { display:flex; flex-direction:column; gap:14px; }
+  .charts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  canvas { width:100% !important; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th, td { text-align:left; padding:5px 6px; border-bottom:1px solid #1f2a38; }
+  th { color:var(--muted); font-weight:500; }
+  .nations { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:8px; }
+  .nation { border:1px solid #27354a; border-radius:8px; padding:8px; background:#0b1119; }
+  .nation.dead { opacity:.35; text-decoration:line-through; }
+  .nation b { display:block; }
+  .nation small { color:var(--muted); }
+  .bar { height:6px; background:#1f2a38; border-radius:3px; overflow:hidden; margin-top:6px; }
+  .bar i { display:block; height:100%; background:var(--acc); }
+  #log { height:220px; overflow:auto; font:12px/1.5 ui-monospace, Menlo, monospace; white-space:pre-wrap; color:#b8c4d3; }
+  .status { font-size:12px; color:var(--muted); margin-top:10px; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; background:#27354a; margin-left:6px; }
+  .pill.on { background:var(--ok); color:#04130c; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mutually Assured Destruction Simulator</h1>
+  <span>Every leader's decision is a Jev (TypeSafe System One) judgment sampled from its probability distribution. Code owns the rules.</span>
+  <span id="conn" class="pill">connecting…</span>
+</header>
+<main>
+  <div class="stack">
+    <div class="panel">
+      <h2>Sweep n → ∞</h2>
+      <label>n values (comma separated)</label>
+      <input id="ns" value="0,1,2,3,4,6,8,12,16,24">
+      <div class="row">
+        <div><label>runs per n</label><input id="runs" type="number" value="6" min="1"></div>
+        <div><label>turns per run</label><input id="turns" type="number" value="12" min="1"></div>
+      </div>
+      <div class="row">
+        <div><label>decision mode</label>
+          <select id="mode"><option value="sample">sample from Jev distribution</option><option value="argmax">Jev top choice</option></select></div>
+        <div><label>decision maker</label>
+          <select id="jev"><option value="true">Jev (jev-latest)</option><option value="false">offline fallback</option></select></div>
+      </div>
+      <button id="startSweep">Run sweep</button>
+      <button id="stop" class="secondary">Stop</button>
+      <div class="status" id="status">idle</div>
+    </div>
+    <div class="panel">
+      <h2>Watch one world</h2>
+      <div class="row">
+        <div><label>n</label><input id="n1" type="number" value="5" min="0"></div>
+        <div><label>seed</label><input id="seed1" type="number" value="42"></div>
+      </div>
+      <button id="startRun" class="secondary">Run single world (live)</button>
+    </div>
+    <div class="panel">
+      <h2>Results by n</h2>
+      <table id="tbl"><thead><tr><th>n</th><th>P(launch)</th><th>P(world destroyed)</th><th>P(false-alarm launch)</th><th>hazard/turn</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="charts">
+      <div class="panel"><h2>P(catastrophe) vs n</h2><canvas id="c1" height="230"></canvas></div>
+      <div class="panel"><h2>Per-turn hazard of first launch vs n</h2><canvas id="c2" height="230"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Live world <span id="turnlbl"></span></h2>
+      <div class="nations" id="nations"><small style="color:var(--muted)">Run a single world to watch Jev decide turn by turn.</small></div>
+    </div>
+    <div class="panel">
+      <h2>Latest decisions</h2>
+      <table id="dec"><thead><tr><th>nation</th><th>action</th><th>P(first strike)</th><th>target</th><th>P(retaliate)</th><th>alert</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="panel"><h2>Event log</h2><div id="log"></div></div>
+  </div>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const stats = new Map();
+const mk = (id, datasets, ymax) => new Chart($(id), { type:'line', data:{labels:[], datasets}, options:{
+  animation:false, responsive:true, scales:{ x:{title:{display:true,text:'n (nuclear-armed nations)'}, ticks:{color:'#7f8ea1'}, grid:{color:'#1f2a38'}},
+  y:{min:0, max:ymax, ticks:{color:'#7f8ea1'}, grid:{color:'#1f2a38'}} }, plugins:{legend:{labels:{color:'#d8e1ea'}}} }});
+const c1 = mk('#c1', [
+  {label:'P(any launch)', data:[], borderColor:'#ffcc4d', tension:.25},
+  {label:'P(world destroyed)', data:[], borderColor:'#ff5f3c', tension:.25},
+  {label:'P(launch on false alarm)', data:[], borderColor:'#7f8ea1', borderDash:[4,4], tension:.25},
+], 1);
+const c2 = mk('#c2', [{label:'hazard per turn', data:[], borderColor:'#3ccf91', tension:.25}], undefined);
+
+function redraw() {
+  const rows = [...stats.values()].sort((a,b)=>a.n-b.n);
+  c1.data.labels = rows.map(r=>r.n); c2.data.labels = rows.map(r=>r.n);
+  c1.data.datasets[0].data = rows.map(r=>r.p_any_launch);
+  c1.data.datasets[1].data = rows.map(r=>r.p_world_destroyed);
+  c1.data.datasets[2].data = rows.map(r=>r.p_false_alarm_launch);
+  c2.data.datasets[0].data = rows.map(r=>r.per_turn_hazard);
+  c1.update(); c2.update();
+  $('#tbl tbody').innerHTML = rows.map(r=>`<tr><td>${r.n}</td><td>${r.p_any_launch.toFixed(2)}</td><td>${r.p_world_destroyed.toFixed(2)} ±${r.ci95_world_destroyed.toFixed(2)}</td><td>${r.p_false_alarm_launch.toFixed(2)}</td><td>${r.per_turn_hazard.toFixed(3)}</td></tr>`).join('');
+}
+function log(s){ const el=$('#log'); el.textContent += s+'\n'; el.scrollTop=el.scrollHeight; }
+function renderNations(ns){
+  $('#nations').innerHTML = ns.map(n=>`<div class="nation ${n.alive?'':'dead'}"><b>${n.name}</b><small>${n.doctrine} · ${n.warheads} wh · ${n.second_strike?'2nd-strike':'no 2nd-strike'}${n.allies.length?' · allies: '+n.allies.join(', '):''}</small>
+    <div class="bar"><i style="width:${Math.round(100*Math.max(0,...Object.values(n.tension||{0:0})))}%"></i></div></div>`).join('');
+}
+function renderDecisions(ds){
+  $('#dec tbody').innerHTML = ds.map(d=>`<tr><td>${d.nation}</td><td><b style="color:${d.action==='first_strike'?'#ff5f3c':'inherit'}">${d.action}</b></td><td>${(d.probabilities.first_strike??0).toFixed(2)}</td><td>${d.target??''}</td><td>${d.retaliate_p.toFixed(2)}</td><td>${d.false_alarm?('⚠ P(launch on warning)='+(d.launch_on_warning_p??0).toFixed(2)):''}</td></tr>`).join('');
+}
+function connect(){
+  const es = new EventSource('/events');
+  es.onopen = ()=>{ $('#conn').textContent='live'; $('#conn').classList.add('on'); };
+  es.onerror = ()=>{ $('#conn').textContent='reconnecting…'; $('#conn').classList.remove('on'); };
+  es.onmessage = ev => {
+    const m = JSON.parse(ev.data);
+    if (m.kind==='snapshot'){ (m.data.stats||[]).forEach(s=>stats.set(s.n,s)); redraw(); $('#log').textContent=(m.data.log||[]).join('\n')+'\n'; setRunning(m.data.running); }
+    else if (m.kind==='nstats'){ stats.set(m.data.n, m.data); redraw(); }
+    else if (m.kind==='log'){ log(m.data); }
+    else if (m.kind==='world'){ renderNations(m.data.nations); $('#turnlbl').textContent='· turn 0'; }
+    else if (m.kind==='turn'){ renderNations(m.data.nations); renderDecisions(m.data.decisions); $('#turnlbl').textContent=`· turn ${m.data.turn} · ${m.data.warheads_detonated} warheads detonated`; }
+    else if (m.kind==='done'){ setRunning(false); $('#status').textContent = m.data.error ? 'error: '+m.data.error : 'done'+(m.data.jev_calls!=null?` · Jev calls: ${m.data.jev_calls}`:''); }
+  };
+}
+function setRunning(r){ $('#startSweep').disabled=r; $('#startRun').disabled=r; if(r) $('#status').textContent='running…'; }
+$('#startSweep').onclick = async ()=>{
+  stats.clear(); redraw();
+  const body = { ns: $('#ns').value.split(',').map(s=>parseInt(s.trim())).filter(x=>!isNaN(x)), runs:+$('#runs').value, turns:+$('#turns').value, mode:$('#mode').value, use_jev: $('#jev').value==='true' };
+  setRunning(true); await fetch('/sweep',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+};
+$('#startRun').onclick = async ()=>{
+  const body = { n:+$('#n1').value, seed:+$('#seed1').value, turns:+$('#turns').value, mode:$('#mode').value, use_jev: $('#jev').value==='true' };
+  setRunning(true); await fetch('/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+};
+$('#stop').onclick = ()=>fetch('/stop',{method:'POST'});
+connect();
+</script>
+</body>
+</html>
