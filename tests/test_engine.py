@@ -1,6 +1,6 @@
 import asyncio
 
-from madsim.engine import Simulation, make_world, WINTER_THRESHOLD
+from madsim.engine import Simulation, make_world, WINTER_THRESHOLD, resolve_assumptions, SCENARIOS, deterrence_facts
 from madsim.report import expected_bound
 from madsim.sweep import sweep, aggregate
 import random
@@ -44,3 +44,30 @@ def test_winter_threshold_ends_run():
     res = asyncio.run(sim.run())
     if res.world_destroyed:
         assert res.warheads_detonated >= WINTER_THRESHOLD
+
+
+def test_historical_offline_is_stable():
+    stats = asyncio.run(sweep(ns=[2, 9, 24], runs=10, turns=40, jev=None, scenario="historical"))
+    assert all(s.p_any_launch == 0.0 for s in stats)
+
+
+def test_pessimist_riskier_than_historical():
+    hist = asyncio.run(sweep(ns=[12], runs=20, turns=30, jev=None, scenario="historical"))[0]
+    pess = asyncio.run(sweep(ns=[12], runs=20, turns=30, jev=None, scenario="pessimist"))[0]
+    assert pess.p_any_launch >= hist.p_any_launch
+
+
+def test_overrides_replace_knobs():
+    a = resolve_assumptions("historical", {"false_alarm_rate": 0.5, "bogus": 1})
+    assert a.false_alarm_rate == 0.5 and a.key == "custom"
+    assert resolve_assumptions("historical", {}) is SCENARIOS["historical"]
+
+
+def test_briefing_reflects_survivability():
+    rng = random.Random(1)
+    me, rival = make_world(2, rng)
+    rival.second_strike = True
+    rival.warheads = 400
+    assert deterrence_facts(me, rival, SCENARIOS["historical"])["rival_forces_survive_our_first_strike"]
+    rival.second_strike = False
+    assert deterrence_facts(me, rival, SCENARIOS["historical"])["rival_warheads_expected_to_survive_and_retaliate"] == 0

@@ -8,7 +8,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional
 
-from .engine import Simulation, RunResult
+from .engine import Simulation, RunResult, DEFAULT_SCENARIO
 from .jev import JevClient
 
 DEFAULT_NS = [0, 1, 2, 3, 4, 6, 8, 12, 16, 24]
@@ -60,11 +60,13 @@ async def sweep(
     runs: int = 6,
     turns: int = 12,
     jev: Optional[JevClient] = None,
-    mode: str = "sample",
+    mode: Optional[str] = None,
     seed0: int = 1,
     on_run: Optional[Callable[[RunResult], Awaitable[None]]] = None,
     on_n: Optional[Callable[[NStats], Awaitable[None]]] = None,
     run_concurrency: int = 4,
+    scenario: str = DEFAULT_SCENARIO,
+    overrides: Optional[dict[str, Any]] = None,
 ) -> list[NStats]:
     out: list[NStats] = []
     for n in ns:
@@ -72,7 +74,7 @@ async def sweep(
 
         async def one(k: int) -> RunResult:
             async with sem:
-                sim = Simulation(n, seed0 + 1000 * n + k, jev, turns=turns, mode=mode)
+                sim = Simulation(n, seed0 + 1000 * n + k, jev, turns=turns, mode=mode, scenario=scenario, overrides=overrides)
                 res = await sim.run()
                 if on_run:
                     await on_run(res)
