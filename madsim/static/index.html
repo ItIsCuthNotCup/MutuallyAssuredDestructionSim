@@ -67,6 +67,15 @@
   .hero .chartwrap { position:relative; flex:1; min-height:300px; margin-top:8px; }
   .hero .foot { margin-top:12px; font-size:13px; color:rgba(255,255,255,.9); background:rgba(0,0,0,.18); border-radius:12px; padding:10px 14px; }
 
+  /* scenarios */
+  .scen { display:flex; gap:6px; margin:8px 0 6px; }
+  .scen button { flex:1; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:10px; padding:7px 4px; font:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+  .scen button.active { color:var(--fg); border-color:var(--orange); background:rgba(255,74,28,.08); }
+  .knobs { display:grid; grid-template-columns:1fr 1fr; gap:6px 10px; margin-top:8px; }
+  .knobs label { font-size:11px; color:var(--muted); display:block; }
+  .knobs input { width:100%; }
+  details.assume summary { cursor:pointer; font-size:12px; color:var(--muted); margin-top:8px; }
+  #scenDesc { font-size:12px; color:var(--muted); margin:0 0 4px; line-height:1.45; }
   /* takeaway */
   .takeaway { display:flex; align-items:center; gap:18px; background:linear-gradient(90deg,#171717,#111); }
   .takeaway .mark { width:44px; height:44px; border-radius:12px; background:var(--yellow); color:#111; display:grid; place-items:center; font-weight:800; font-size:20px; flex:none; }
@@ -99,7 +108,8 @@
   .gauge .arc { position:relative; flex:1; display:flex; align-items:center; justify-content:center; min-height:140px; }
   .gauge canvas { width:220px; max-width:100%; height:auto; display:block; }
   .gauge .num { position:absolute; left:0; right:0; top:50%; transform:translateY(-4px); text-align:center; pointer-events:none; }
-  .gauge-controls { grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); }
+  .gauge-controls { grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); align-items:start; }
+  .hero .chartwrap { max-height:420px; }
   .gauge .num b { font-size:36px; font-weight:800; letter-spacing:-1px; }
   .gauge .num small { color:var(--muted); font-size:12px; display:block; }
 
@@ -166,7 +176,8 @@
       <div class="kicker">What is this?</div>
       <h2 style="font-size:22px;margin-top:6px">What happens when more countries get the bomb?</h2>
       <p><b>Mutually Assured Destruction (MAD)</b> is the idea that if two countries can each wipe the other out, neither will attack first, because the counter-attack would be certain. It kept the peace between the US and USSR for decades.</p>
-      <p>This simulator asks a simple question: <b>does that logic still work when there are 3, 10, or 30 nuclear countries?</b> Each country is run by an AI leader (Jev) who sees the world and picks a move every year. We replay history many times and count how often the world ends.</p>
+      <p>This simulator asks a simple question: <b>does that logic still work when there are 3, 10, or 30 nuclear countries?</b> Each country is run by an AI leader (Jev) who sees the world, a military briefing on what a first strike would cost, and picks a move every year. We replay history many times and count how often the world ends.</p>
+      <p><b>Reality check:</b> nine countries have had nuclear weapons for decades and none has been used in war since 1945. The <i>Calibrated to history</i> scenario is tuned to reproduce that; the other scenarios follow the two camps in the academic debate (Waltz's optimists vs Sagan's pessimists). Change the assumptions and see what the crowd does.</p>
       <div class="steps">
         <div class="step"><b><i style="background:var(--green)"></i>1 · Set the number of countries</b>Use the slider or a preset on the right.</div>
         <div class="step"><b><i style="background:var(--yellow)"></i>2 · Jev plays every leader</b>Each year every leader chooses: hold, talk, build, disarm or fire.</div>
@@ -184,9 +195,22 @@
           <div class="kicker">Countries with nukes</div>
           <div class="nval"><span id="nOut">9</span> <span style="font-size:12px;color:var(--muted);font-weight:600">max n</span></div>
           <input id="nmax" type="range" min="0" max="40" value="9">
+          <div class="kicker" style="margin-top:10px">Assumptions <span class="help" data-tip="The empirical knobs of the world: how often radars cry wolf, how often crises happen, and whether arsenals survive a first strike. Real research disagrees on these, so you can pick a camp or set your own.">?</span></div>
+          <div class="scen" id="scen"></div>
+          <p id="scenDesc"></p>
+          <details class="assume"><summary>Fine-tune the assumptions</summary>
+            <div class="knobs">
+              <div><label>False alarms / country / yr</label><input data-k="false_alarm_rate" type="number" step="0.005" min="0" max="1"></div>
+              <div><label>Alarms not cross-checked</label><input data-k="alarm_uncorroborated" type="number" step="0.05" min="0" max="1"></div>
+              <div><label>Crises / rival pair / yr</label><input data-k="crisis_rate_per_pair" type="number" step="0.005" min="0" max="1"></div>
+              <div><label>Countries with survivable forces</label><input data-k="second_strike_p" type="number" step="0.1" min="0" max="1"></div>
+              <div><label>Tension cools per yr</label><input data-k="tension_decay" type="number" step="0.01" min="0" max="1"></div>
+              <div><label>Leaders act on</label><select data-k="decision_mode"><option value="argmax">Jev's most likely move</option><option value="sample">a roll of Jev's dice</option></select></div>
+            </div>
+          </details>
           <div class="row2">
             <div><label>Replays per n <span class="help" data-tip="How many times we re-run history for each number of countries. More replays = smoother curve, more Jev calls.">?</span></label><input id="runs" type="number" value="10" min="1" max="60"></div>
-            <div><label>Years per replay</label><input id="turns" type="number" value="12" min="1" max="40"></div>
+            <div><label>Years per replay</label><input id="turns" type="number" value="25" min="1" max="80"></div>
           </div>
           <button id="startSweep" class="btn primary">Run the demo</button>
           <button id="stop" class="btn ghost" style="margin-top:8px">Stop</button>
@@ -203,7 +227,7 @@
         <button data-n="2">Cold War · 2</button><button data-n="9" class="active">Today · 9</button><button data-n="20">Crowded · 20</button><button data-n="40">Everyone · 40</button>
       </div>
       <div class="chartwrap"><canvas id="c1"></canvas></div>
-      <div class="foot"><b>Why does it climb?</b> Every extra leader is one more person who might panic, bluff, or misread a radar screen, and MAD guarantees that one launch triggers the rest.</div>
+      <div class="foot" id="heroFoot"><b>Reading the curve:</b> a flat line at 0 means deterrence held in every replay, as it has in the real world so far. A climbing line means extra leaders add extra chances to panic, bluff, or misread a radar, and MAD turns one launch into many.</div>
     </div>
   </div>
 
@@ -227,14 +251,14 @@
 
   <div class="grid g-3 mt">
     <div class="panel">
-      <h2>What each leader is thinking <span class="help" data-tip="Jev doesn't write text. For each leader it returns probabilities for each possible move. We roll the dice using those probabilities, so the same leader can act differently in different replays.">?</span></h2>
+      <h2>What each leader is thinking <span class="help" data-tip="Jev doesn't write text. For each leader it returns probabilities for each possible move. By default the leader takes the most likely move; in the pessimist scenario we roll the dice instead, so the same leader can act differently in different replays.">?</span></h2>
       <div class="sub">Jev's probabilities for this year's move. The bold word is what they actually did.</div>
       <div class="dec" id="dec"><div class="sub">No world running.</div></div>
       <div class="legend"><span><i style="background:#39d98a"></i>hold</span><span><i style="background:#8ecbff"></i>talk it out</span><span><i style="background:#ffd23f"></i>build more</span><span><i style="background:#d9d9d9"></i>disarm</span><span><i style="background:#ff4a1c"></i>FIRE</span></div>
     </div>
     <div class="panel">
       <h2>Chance someone fires this year <span class="help" data-tip="Given nobody has fired yet, how likely is it that at least one leader launches during this year? Pooled across replays.">?</span></h2>
-      <div class="sub">Roughly doubles when you double the countries. That's the whole story.</div>
+      <div class="sub">If each leader carries a small independent risk, this roughly doubles when you double the countries. If deterrence is secure, it stays near zero.</div>
       <canvas id="c2" height="230"></canvas>
     </div>
     <div class="panel">
@@ -246,14 +270,14 @@
 
   <div id="why" class="grid g-2 mt">
     <div class="panel why">
-      <h2>Why more countries means more danger</h2>
+      <h2>What the research actually says</h2>
       <ol>
-        <li><b>Nobody is perfectly safe.</b> Even a calm leader has some tiny chance each year of firing: a false alarm, a crisis, a bluff gone wrong.</li>
-        <li><b>Tiny chances add up.</b> If each of n leaders has a 1% chance of firing this year, the chance that <i>at least one</i> does is about n%. With 30 leaders that's ~26% per year, not 1%.</li>
-        <li><b>MAD guarantees the counter-attack.</b> That is what stops rational leaders, but it also means one launch becomes a chain reaction, especially through alliances.</li>
-        <li><b>So the world survives 2 well, and ∞ never.</b> The right formula is below: as n grows, the chance nobody ever fires shrinks to zero.</li>
+        <li><b>Deterrence is a game, and the payoff matters.</b> Schelling showed a rational leader never strikes first if the victim's forces survive to hit back: the attacker loses its cities for nothing. Intriligator &amp; Brito made this precise: with <i>survivable</i> second-strike forces, attacking is never the best move, no matter how many players there are.</li>
+        <li><b>Optimists (Waltz): "more may be better".</b> Every new nuclear state faces the same suicidal maths, so new members behave like the old ones. Nine states, ~80 years, zero launches fits this.</li>
+        <li><b>Pessimists (Sagan): "more will be worse".</b> The danger is not rational choice but organisations: vulnerable arsenals that tempt preemption, radars that cry wolf, weak checks on erratic leaders. If each leader carries an independent slice of that risk, it adds up.</li>
+        <li><b>So n only matters through the accident channel.</b> With secure forces and good command and control, the curve stays flat. Only if you assume fragile new members does it climb, and then the formula below takes over.</li>
       </ol>
-      <div class="formula">P(nobody fires in T years) ≤ (1 − p)<sup>n·T</sup> → 0 as n → ∞</div>
+      <div class="formula">P(nobody fires in T years) ≈ (1 − p<sub>accident</sub>)<sup>n·T</sup>; deterrence sets p<sub>accident</sub>, not n</div>
     </div>
     <div class="panel" id="data">
       <h2>The numbers</h2>
@@ -320,7 +344,12 @@ function redraw() {
     const lo = rows.find(r=>r.n>=2) || rows[0], hi = rows[rows.length-1];
     if (lo && hi && lo.n !== hi.n) {
       $('#takeaway').textContent = `With ${lo.n} nuclear countries the world survived ${pct(1-lo.p_world_destroyed)} of the time. With ${hi.n}, it survived ${pct(1-hi.p_world_destroyed)}.`;
-      $('#takeawaySub').textContent = hi.p_world_destroyed >= lo.p_world_destroyed ? `MAD works as a two-player standoff; it stops working as a crowd. Chance of someone firing in a given year went from ${pct(lo.per_turn_hazard)} to ${pct(hi.per_turn_hazard)}.` : `Unusual: fewer disasters at higher n in this sample. Try more replays per n.`;
+      const allSafe = rows.every(r=>r.p_any_launch===0);
+      $('#takeawaySub').textContent = allSafe
+        ? `Nobody fired in any replay (${scenName()}). Under these assumptions deterrence held at every n, matching the real record since 1945. Switch to the pessimist assumptions to stress it.`
+        : hi.p_world_destroyed > lo.p_world_destroyed
+          ? `Under ${scenName()} assumptions, more countries meant more disasters: chance of someone firing in a given year went from ${pct(lo.per_turn_hazard)} to ${pct(hi.per_turn_hazard)}.`
+          : `Under ${scenName()} assumptions, danger did not clearly rise with n in this sample. Try more replays per n.`;
     }
   } else {
     $('#takeaway').textContent = rows.length ? `Only ${rows.length} value of n finished so far.` : 'Run a sweep to see how survival changes with the number of nuclear countries.';
@@ -366,6 +395,25 @@ function renderDecisions(ds){
     <div class="act" style="color:${COLORS[d.action]}">${LABEL[d.action]}</div></div>`).join('');
 }
 
+/* ---- scenarios ---- */
+let SCEN = [], scenKey = 'historical', overrides = {};
+const scenName = () => (SCEN.find(s=>s.key===scenKey)||{}).name || scenKey;
+const KNOBS = [...document.querySelectorAll('.knobs [data-k]')];
+function applyScenario(k){
+  scenKey = k; overrides = {};
+  const s = SCEN.find(x=>x.key===k); if(!s) return;
+  document.querySelectorAll('#scen button').forEach(b=>b.classList.toggle('active', b.dataset.k===k));
+  $('#scenDesc').textContent = s.description;
+  KNOBS.forEach(el=>{ el.value = s[el.dataset.k]; });
+}
+KNOBS.forEach(el=>el.onchange=()=>{ const v = el.tagName==='SELECT' ? el.value : +el.value; overrides[el.dataset.k]=v; $('#scenDesc').textContent = `Custom assumptions based on “${scenName()}”.`; });
+fetch('/scenarios').then(r=>r.json()).then(list=>{
+  SCEN = list;
+  $('#scen').innerHTML = list.map(s=>`<button data-k="${s.key}">${s.name.replace(/ \(.*\)/,'')}</button>`).join('');
+  document.querySelectorAll('#scen button').forEach(b=>b.onclick=()=>applyScenario(b.dataset.k));
+  applyScenario(scenKey);
+});
+
 /* ---- SSE ---- */
 function setRunning(r){ $('#startSweep').disabled=r; $('#startRun').disabled=r; $('#conn').classList.toggle('busy', r); if(r) $('#status').textContent='Jev is deciding…'; }
 function connect(){
@@ -374,7 +422,7 @@ function connect(){
   es.onerror = ()=>{ $('#conntxt').textContent='reconnecting'; $('#conn').classList.remove('on'); };
   es.onmessage = ev => {
     const m = JSON.parse(ev.data);
-    if (m.kind==='snapshot'){ (m.data.stats||[]).forEach(s=>stats.set(s.n,s)); redraw(); (m.data.log||[]).forEach(log); setRunning(m.data.running);
+    if (m.kind==='snapshot'){ if (m.data.meta && m.data.meta.scenario) scenKey = m.data.meta.scenario; (m.data.stats||[]).forEach(s=>stats.set(s.n,s)); redraw(); (m.data.log||[]).forEach(log); setRunning(m.data.running);
       if (m.data.world){ renderNations(m.data.world.nations); renderDecisions(m.data.world.decisions||[]); $('#turnlbl').style.display='inline-flex'; $('#turnlbl').textContent=`year ${m.data.world.turn} · ${(m.data.world.warheads_detonated||0).toLocaleString()} warheads detonated`; } }
     else if (m.kind==='start'){ setRunning(true); if (m.data.kind==='sweep'){ stats.clear(); redraw(); } logCount=0; $('#log').innerHTML=''; }
     else if (m.kind==='nstats'){ stats.set(m.data.n, m.data); redraw(); $('#status').textContent=`finished n=${m.data.n}…`; }
@@ -386,12 +434,12 @@ function connect(){
 }
 $('#startSweep').onclick = async ()=>{
   const nmax = +$('#nmax').value; const ns = NSET.filter(n=>n<nmax); ns.push(nmax);
-  const body = { ns:[...new Set(ns)], runs:+$('#runs').value, turns:+$('#turns').value, mode:'sample', use_jev:true };
+  const body = { ns:[...new Set(ns)], runs:+$('#runs').value, turns:+$('#turns').value, use_jev:true, scenario:scenKey, overrides };
   setRunning(true); const r = await fetch('/sweep',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
   if (!r.ok) { setRunning(false); $('#status').textContent = 'already running'; }
 };
 $('#startRun').onclick = async ()=>{
-  const body = { n:+$('#n1').value, seed:+$('#seed1').value, turns:+$('#turns').value, mode:'sample', use_jev:true };
+  const body = { n:+$('#n1').value, seed:+$('#seed1').value, turns:+$('#turns').value, use_jev:true, scenario:scenKey, overrides };
   setRunning(true); const r = await fetch('/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
   if (!r.ok) { setRunning(false); $('#status').textContent = 'already running'; }
   document.getElementById('world').scrollIntoView({behavior:'smooth'});

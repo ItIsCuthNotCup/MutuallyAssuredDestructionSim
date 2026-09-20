@@ -48,7 +48,7 @@ def write_analysis(stats: list[NStats], meta: dict[str, Any], path: Path) -> Non
     lines = [
         "# MAD sweep analysis",
         "",
-        f"Model: `{meta.get('model')}` · runs/n: {meta.get('runs')} · turns/run: {meta.get('turns')} · mode: {meta.get('mode')} · Jev calls: {meta.get('jev_calls')}",
+        f"Model: `{meta.get('model')}` · scenario: `{meta.get('scenario', 'historical')}` · runs/n: {meta.get('runs')} · turns/run: {meta.get('turns')} · Jev calls: {meta.get('jev_calls')}",
         "",
         "| n | P(any launch) | P(world destroyed) ±95% | P(false-alarm launch) | mean nations destroyed | mean first-launch turn | hazard/turn |",
         "|---|---|---|---|---|---|---|",
@@ -70,21 +70,20 @@ def write_analysis(stats: list[NStats], meta: dict[str, Any], path: Path) -> Non
     big = [s for s in stats if s.n >= 8]
     if big:
         s = big[-1]
-        lines.append(f"- **n = {s.n}**: P(world destroyed) = {s.p_world_destroyed:.0%}, per-turn hazard {s.per_turn_hazard:.3f}. With many independent decision-makers, false alarms and one erratic leader are enough; retaliation cascades through alliances turn any single launch into a global exchange.")
+        if s.p_any_launch == 0:
+            lines.append(f"- **n = {s.n}**: nobody launched in any replay. Deterrence held: every leader's briefing showed a first strike would be answered, and no false alarm survived cross-checking.")
+        else:
+            lines.append(f"- **n = {s.n}**: P(world destroyed) = {s.p_world_destroyed:.0%}, per-turn hazard {s.per_turn_hazard:.3f}. With many independent decision-makers, uncorroborated false alarms and vulnerable arsenals are enough; retaliation cascades through alliances turn any single launch into a global exchange.")
 
     lines += [
         "",
-        "## Why the limit n → ∞ is destruction",
+        "## How n enters the result",
         "",
-        "Let each nuclear-armed leader have some small per-turn probability p_i > 0 of launching (first strike, or launch-on-warning after a false alarm). "
-        "Even if MAD makes every individual p_i tiny, the chance that *nobody* launches in a turn is ∏(1 − p_i) ≤ (1 − p_min)^n → 0 as n → ∞. "
-        "Over T turns, P(no launch) ≤ (1 − p_min)^(nT). MAD works by making retaliation certain, which suppresses p_i for *rational* actors, "
-        "but it cannot drive any p_i to exactly zero (accidents, misperception, erratic leaders), and it multiplies the consequences of a single launch "
-        "because retaliation is exactly what the doctrine guarantees. The simulation shows both halves: the observed per-turn hazard grows roughly "
-        "linearly in n (right-hand chart), and once a launch happens the retaliation + alliance cascade pushes warheads detonated past the nuclear-winter threshold.",
-        "",
-        "So MAD is a stable equilibrium for n = 2 with rational actors, becomes fragile as n grows, and the probability of a civilization-ending exchange "
-        "tends to 1 as n → ∞ for any fixed horizon T.",
+        "With survivable second-strike forces a first strike is never a best response (Schelling; Intriligator & Brito), regardless of n. "
+        "Under those assumptions the only route to a launch is an *accident*: an uncorroborated false alarm, or an erratic leader in a crisis. "
+        "If each leader carries an independent per-year accident probability p > 0, then P(no launch in T years) ≈ (1 − p)^(nT), which falls with n. "
+        "Whether the curve is flat or climbing therefore depends on p, i.e. on whether new nuclear states have secure forces and disciplined command and control "
+        "(Waltz's optimism) or vulnerable forces and fragile organisations (Sagan's pessimism). The scenario knobs set p; the sweep shows the consequence.",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n")

@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from .engine import Simulation, TurnResult, RunResult
+from .engine import Simulation, TurnResult, RunResult, DEFAULT_SCENARIO, SCENARIOS
 from .jev import JevClient
 from .sweep import sweep, save, NStats, DEFAULT_NS
 
@@ -51,22 +51,31 @@ class SweepParams(BaseModel):
     ns: list[int] = DEFAULT_NS
     runs: int = 6
     turns: int = 12
-    mode: str = "sample"
+    mode: Optional[str] = None
     use_jev: bool = True
     seed: int = 1
+    scenario: str = DEFAULT_SCENARIO
+    overrides: dict[str, Any] = {}
 
 
 class RunParams(BaseModel):
     n: int = 5
     turns: int = 12
-    mode: str = "sample"
+    mode: Optional[str] = None
     use_jev: bool = True
     seed: int = 42
+    scenario: str = DEFAULT_SCENARIO
+    overrides: dict[str, Any] = {}
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index() -> str:
     return (ROOT / "madsim" / "static" / "index.html").read_text()
+
+
+@app.get("/scenarios")
+async def scenarios() -> JSONResponse:
+    return JSONResponse([asdict(a) for a in SCENARIOS.values()])
 
 
 @app.get("/state")
@@ -159,8 +168,8 @@ async def _run_single(p: RunParams) -> None:
                 await publish("log", f"[n={p.n} turn {tr.turn}] {e}")
             await asyncio.sleep(LIVE_TURN_DELAY)
 
-        sim = Simulation(p.n, p.seed, jev, turns=p.turns, mode=p.mode, on_turn=on_turn)
-        await publish("log", f"Single run: n={p.n}, seed={p.seed}, mode={p.mode}, jev={'on' if jev else 'off'}")
+        sim = Simulation(p.n, p.seed, jev, turns=p.turns, mode=p.mode, on_turn=on_turn, scenario=p.scenario, overrides=p.overrides)
+        await publish("log", f"Single run: n={p.n}, seed={p.seed}, scenario={p.scenario}, jev={'on' if jev else 'off'}")
         _state["world"] = {"turn": 0, "decisions": [], "events": [], "warheads_detonated": 0, "nations": [asdict(x) for x in sim.nations]}
         await publish("world", {"nations": [asdict(x) for x in sim.nations]})
         res = await sim.run()
@@ -192,8 +201,8 @@ async def _run_sweep(p: SweepParams) -> None:
             _state["stats"].append(payload)
             await publish("nstats", payload)
 
-        await publish("log", f"Sweep start: ns={p.ns} runs={p.runs} turns={p.turns} mode={p.mode} jev={'on' if jev else 'off'}")
-        stats = await sweep(p.ns, p.runs, p.turns, jev, p.mode, p.seed, on_run=on_run, on_n=on_n)
+        await publish("log", f"Sweep start: ns={p.ns} runs={p.runs} turns={p.turns} scenario={p.scenario} jev={'on' if jev else 'off'}")
+        stats = await sweep(p.ns, p.runs, p.turns, jev, p.mode, p.seed, on_run=on_run, on_n=on_n, scenario=p.scenario, overrides=p.overrides)
         meta = {**p.model_dump(), "jev_calls": jev.calls if jev else 0, "input_tokens": jev.input_tokens if jev else 0,
                 "seconds": round(time.time() - started, 1), "model": "jev-latest" if jev else "fallback"}
         fname = f"sweep_{int(started)}.json"

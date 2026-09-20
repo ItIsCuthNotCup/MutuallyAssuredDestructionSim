@@ -7,21 +7,111 @@ from __future__ import annotations
 
 import asyncio
 import random
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, replace, asdict
 from typing import Any, Awaitable, Callable, Optional
 
 from .jev import JevClient
 
 ACTIONS = ("first_strike", "build_arms", "hold", "negotiate", "disarm")
 DOCTRINES = ("hawkish", "moderate", "dovish", "erratic")
+DOCTRINE_TEXT = {
+    "hawkish": "Hawkish: favours arms build-up and a firm line in crises; nuclear weapons reserved for retaliation or existential threats",
+    "moderate": "Moderate: mainstream deterrence doctrine, professional command and control, seeks stability",
+    "dovish": "Dovish: favours arms control and de-escalation; strong nuclear taboo",
+    "erratic": "Erratic: personalist regime, unpredictable, weak institutional checks on the leader",
+}
 NON_NUCLEAR = "non_nuclear_state"
 
 # The world ends when this many warheads have detonated (nuclear-winter threshold).
 WINTER_THRESHOLD = 100
 # A strike needs this many warheads to destroy a target.
 STRIKE_MIN = 5
-FALSE_ALARM_RATE = 0.04  # per nation per turn
-CRISIS_RATE = 0.15  # per turn, a random pair's tension spikes
+
+
+@dataclass(frozen=True)
+class Assumptions:
+    """Empirical knobs of the world model. Rates are per nation (or pair) per year."""
+
+    key: str
+    name: str
+    description: str
+    false_alarm_rate: float  # serious early-warning alerts per nation-year
+    alarm_uncorroborated: float  # share of alerts not disproven by a second sensor before the decision
+    crisis_rate_per_pair: float  # acute crises per rival pair per year
+    tension_decay: float  # yearly relaxation of tension toward its baseline
+    second_strike_p: float  # share of states fielding survivable (submarine/mobile) forces
+    survivable_fraction: tuple[float, float]  # warheads that survive a first strike, for second-strike states
+    doctrine_weights: tuple[float, float, float, float]  # hawkish, moderate, dovish, erratic
+    build_tension: float  # tension rivals add when a state expands its arsenal
+    decision_mode: str  # "argmax": leaders take Jev's most likely action; "sample": actions are drawn from its distribution
+
+
+SCENARIOS: dict[str, Assumptions] = {
+    "historical": Assumptions(
+        key="historical",
+        name="Calibrated to history",
+        description=(
+            "Rates fitted to the nuclear age: ~5 serious false alarms in ~600 nuclear-state-years, all caught by "
+            "cross-checking; roughly one acute nuclear crisis per decade; every established state keeps survivable "
+            "forces, so a first strike cannot prevent retaliation (Intriligator & Brito; Waltz)."
+        ),
+        false_alarm_rate=0.01,
+        alarm_uncorroborated=0.1,
+        crisis_rate_per_pair=0.01,
+        tension_decay=0.1,
+        second_strike_p=0.9,
+        survivable_fraction=(0.3, 0.7),
+        doctrine_weights=(2, 5, 2, 0.3),
+        build_tension=0.03,
+        decision_mode="argmax",
+    ),
+    "optimist": Assumptions(
+        key="optimist",
+        name="Optimist (Waltz)",
+        description=(
+            "'More may be better': every state has assured second-strike forces and professional command and control, "
+            "so deterrence is robust and new members behave like the old ones."
+        ),
+        false_alarm_rate=0.005,
+        alarm_uncorroborated=0.02,
+        crisis_rate_per_pair=0.01,
+        tension_decay=0.15,
+        second_strike_p=1.0,
+        survivable_fraction=(0.5, 0.9),
+        doctrine_weights=(1, 5, 3, 0),
+        build_tension=0.02,
+        decision_mode="argmax",
+    ),
+    "pessimist": Assumptions(
+        key="pessimist",
+        name="Pessimist (Sagan)",
+        description=(
+            "'More will be worse': new nuclear states have fragile warning systems, vulnerable arsenals that invite "
+            "preemption, and organisations prone to accidents and hawkish bias."
+        ),
+        false_alarm_rate=0.04,
+        alarm_uncorroborated=0.5,
+        crisis_rate_per_pair=0.04,
+        tension_decay=0.03,
+        second_strike_p=0.5,
+        survivable_fraction=(0.1, 0.4),
+        doctrine_weights=(3, 4, 2, 1.5),
+        build_tension=0.08,
+        decision_mode="sample",
+    ),
+}
+DEFAULT_SCENARIO = "historical"
+
+
+def resolve_assumptions(scenario: str, overrides: Optional[dict[str, Any]] = None) -> Assumptions:
+    a = SCENARIOS[scenario]
+    if not overrides:
+        return a
+    allowed = {"false_alarm_rate", "alarm_uncorroborated", "crisis_rate_per_pair", "tension_decay", "second_strike_p", "build_tension", "decision_mode"}
+    clean = {k: v for k, v in overrides.items() if k in allowed and v is not None}
+    if clean:
+        clean.update(key="custom", name=f"{a.name} (custom)")
+    return replace(a, **clean)
 
 
 @dataclass
@@ -94,7 +184,7 @@ NAMES = [
 ]
 
 
-def make_world(n: int, rng: random.Random) -> list[Nation]:
+def make_world(n: int, rng: random.Random, a: Assumptions = SCENARIOS[DEFAULT_SCENARIO]) -> list[Nation]:
     names = [NAMES[i] if i < len(NAMES) else f"Nation{i+1}" for i in range(n)]
     nations: list[Nation] = []
     for name in names:
@@ -102,8 +192,8 @@ def make_world(n: int, rng: random.Random) -> list[Nation]:
             Nation(
                 name=name,
                 warheads=rng.choice([10, 40, 150, 400, 1500]),
-                second_strike=rng.random() < 0.6,
-                doctrine=rng.choices(DOCTRINES, weights=[3, 5, 2, 1])[0],
+                second_strike=rng.random() < a.second_strike_p,
+                doctrine=rng.choices(DOCTRINES, weights=list(a.doctrine_weights))[0],
             )
         )
     # random alliances (pairs), random baseline tension
@@ -118,8 +208,28 @@ def make_world(n: int, rng: random.Random) -> list[Nation]:
     for x in nations:
         for y in nations:
             if x is not y:
-                x.tension[y.name] = 0.1 if y.name in x.allies else round(rng.uniform(0.2, 0.6), 2)
+                x.tension[y.name] = 0.05 if y.name in x.allies else round(rng.uniform(0.1, 0.45), 2)
     return nations
+
+
+def deterrence_facts(me: Nation, rival: Nation, a: Assumptions) -> dict[str, Any]:
+    """What a leader's planners would brief before any strike: the expected exchange, not a recommendation."""
+    lo, hi = a.survivable_fraction
+    if rival.second_strike:
+        surviving = int(rival.warheads * (lo + hi) / 2)
+        return {
+            "rival": rival.name,
+            "rival_forces_survive_our_first_strike": True,
+            "rival_warheads_expected_to_survive_and_retaliate": surviving,
+            "expected_result_for_us": "our major cities destroyed" if surviving >= STRIKE_MIN else "limited damage",
+        }
+    return {
+        "rival": rival.name,
+        "rival_forces_survive_our_first_strike": False,
+        "rival_warheads_expected_to_survive_and_retaliate": 0,
+        "expected_result_for_us": "no nuclear retaliation from this rival; global condemnation, sanctions and other states"
+        " treating us as an existential threat",
+    }
 
 
 def _questions(me: Nation, others: list[Nation], early_warning: bool) -> dict[str, Any]:
@@ -128,7 +238,7 @@ def _questions(me: Nation, others: list[Nation], early_warning: bool) -> dict[st
     q: dict[str, Any] = {
         "action": {
             "type": "choice",
-            "instructions": "You are the supreme leader of `me`. Given `world`, `others` and your `me.doctrine`, what do you order this turn? Weigh survival of your nation above all else.",
+            "instructions": "You are the supreme leader of `me`. Given `world`, `others`, your `me.doctrine` and your planners' `military_briefing_on_first_strike`, what do you order this year? Weigh survival of your nation above all else.",
             "criteria": {
                 "first_strike": "Launch a preemptive nuclear strike this turn against a chosen target",
                 "build_arms": "Expand the nuclear arsenal and delivery systems (raises rivals' tension)",
@@ -161,14 +271,15 @@ def _questions(me: Nation, others: list[Nation], early_warning: bool) -> dict[st
     return q
 
 
-def _state(me: Nation, others: list[Nation], world: dict[str, Any], early_warning: bool) -> dict[str, Any]:
+def _state(me: Nation, others: list[Nation], world: dict[str, Any], early_warning: bool, a: Assumptions) -> dict[str, Any]:
     most_tense = max(me.tension.items(), key=lambda kv: kv[1])[0] if me.tension else None
+    rival = next((o for o in others if o.name == most_tense and o.alive), None)
     st = {
         "me": {
             "name": me.name,
             "warheads": me.warheads,
             "second_strike_capability": me.second_strike,
-            "doctrine": me.doctrine,
+            "doctrine": DOCTRINE_TEXT[me.doctrine],
             "allies": me.allies,
             "tension_with_each_rival": {k: round(v, 2) for k, v in me.tension.items()},
             "most_hostile_rival": most_tense,
@@ -176,11 +287,14 @@ def _state(me: Nation, others: list[Nation], world: dict[str, Any], early_warnin
         },
         "others": [o.public_view() for o in others],
         "world": world,
+        "military_briefing_on_first_strike": deterrence_facts(me, rival, a) if rival else None,
     }
     if early_warning:
         st["alert"] = {
             "early_warning_radar": "Possible ballistic launch detected heading toward our territory. Could be a real attack or a sensor malfunction.",
+            "corroborated_by_second_sensor": False,
             "minutes_to_impact": 12,
+            "historical_note": "Every previous alert of this kind in the record turned out to be a malfunction.",
         }
     return st
 
@@ -200,17 +314,21 @@ class Simulation:
         seed: int,
         jev: Optional[JevClient],
         turns: int = 12,
-        mode: str = "sample",
+        mode: Optional[str] = None,
         on_turn: Optional[Callable[[TurnResult], Awaitable[None]]] = None,
+        scenario: str = DEFAULT_SCENARIO,
+        overrides: Optional[dict[str, Any]] = None,
     ):
         self.n = n
         self.seed = seed
         self.rng = random.Random(seed)
         self.jev = jev
         self.turns = turns
-        self.mode = mode
+        self.a = resolve_assumptions(scenario, overrides)
+        self.mode = mode or self.a.decision_mode
         self.on_turn = on_turn
-        self.nations = make_world(n, self.rng)
+        self.nations = make_world(n, self.rng, self.a)
+        self.baseline = {x.name: dict(x.tension) for x in self.nations}
         self.detonated = 0
         self.events_log: list[str] = []
         self.launches = 0
@@ -220,7 +338,7 @@ class Simulation:
         others = [o for o in self.nations if o is not me]
         if self.jev is None:
             return self._fallback_decision(me, others, early_warning)
-        answers = await self.jev.ask(_state(me, others, world, early_warning), _questions(me, others, early_warning))
+        answers = await self.jev.ask(_state(me, others, world, early_warning, self.a), _questions(me, others, early_warning))
         probs = answers["action"]["probabilities"]
         action = _sample(self.rng, probs) if self.mode == "sample" else answers["action"]["choice"]
         tprobs = answers["strike_target"]["probabilities"]
@@ -239,21 +357,26 @@ class Simulation:
 
     def _fallback_decision(self, me: Nation, others: list[Nation], early_warning: bool) -> Decision:
         """Deterministic stand-in used offline/in tests: a cautious rational actor."""
-        max_t = max(me.tension.values(), default=0.0)
-        p_strike = 0.02 * max_t
-        probs = {"first_strike": p_strike, "build_arms": 0.3, "hold": 0.5 - p_strike, "negotiate": 0.15, "disarm": 0.05}
         alive = [o for o in others if o.alive]
-        target = max(alive, key=lambda o: me.tension.get(o.name, 0)).name if alive else NON_NUCLEAR
-        return Decision(me.name, _sample(self.rng, probs), probs, target, 0.9, 0.5, 0.2 if early_warning else None, early_warning)
+        rival = max(alive, key=lambda o: me.tension.get(o.name, 0)) if alive else None
+        max_t = me.tension.get(rival.name, 0.0) if rival else 0.0
+        # striking a state with survivable forces is suicidal, so a rational actor almost never does it
+        p_strike = 0.02 * max_t * (0.1 if rival and rival.second_strike else 1.0)
+        probs = {"first_strike": p_strike, "build_arms": 0.3, "hold": 0.5 - p_strike, "negotiate": 0.15, "disarm": 0.05}
+        target = rival.name if rival else NON_NUCLEAR
+        action = _sample(self.rng, probs) if self.mode == "sample" else max(probs, key=probs.get)
+        return Decision(me.name, action, probs, target, 0.9, 0.5, 0.2 if early_warning else None, early_warning)
 
     # ---- rules ------------------------------------------------------------
     def _by(self, name: str) -> Nation:
         return next(x for x in self.nations if x.name == name)
 
-    def _launch(self, attacker: Nation, target_name: str, events: list[str], reason: str) -> None:
+    def _launch(self, attacker: Nation, target_name: str, events: list[str], reason: str, cap: Optional[int] = None) -> None:
         if not attacker.alive or attacker.warheads < STRIKE_MIN:
             return
         used = attacker.warheads if target_name != NON_NUCLEAR else min(attacker.warheads, 5)
+        if cap is not None:
+            used = min(used, cap)
         self.detonated += used
         self.launches += 1
         attacker.warheads -= used
@@ -271,24 +394,32 @@ class Simulation:
 
     async def step(self, turn: int) -> TurnResult:
         events: list[str] = []
-        # exogenous crisis
         alive = [x for x in self.nations if x.alive]
-        if len(alive) >= 2 and self.rng.random() < CRISIS_RATE:
-            a, b = self.rng.sample(alive, 2)
-            bump = self.rng.uniform(0.15, 0.35)
-            a.tension[b.name] = min(1.0, a.tension[b.name] + bump)
-            b.tension[a.name] = min(1.0, b.tension[a.name] + bump)
-            events.append(f"Crisis flares between {a.name} and {b.name}")
+        # crises resolve: tension relaxes toward its baseline each year
+        for x in alive:
+            for k, v in x.tension.items():
+                base = self.baseline[x.name][k]
+                x.tension[k] = round(v + (base - v) * self.a.tension_decay, 3)
+        # exogenous crises, one chance per rival pair per year
+        if len(alive) >= 2:
+            pairs = len(alive) * (len(alive) - 1) / 2
+            for _ in range(int(pairs)):
+                if self.rng.random() < self.a.crisis_rate_per_pair:
+                    a, b = self.rng.sample(alive, 2)
+                    bump = self.rng.uniform(0.15, 0.35)
+                    a.tension[b.name] = min(1.0, a.tension[b.name] + bump)
+                    b.tension[a.name] = min(1.0, b.tension[a.name] + bump)
+                    events.append(f"Crisis flares between {a.name} and {b.name}")
 
         world = {
             "turn": turn,
             "nuclear_armed_nations": len(alive),
-            "nuclear_launches_so_far": self.launches,
+            "nuclear_weapons_used_in_war_since_1945": self.launches,
             "warheads_detonated_so_far": self.detonated,
             "nuclear_winter_threshold_warheads": WINTER_THRESHOLD,
             "recent_events": self.events_log[-5:],
         }
-        alarms = {x.name: (self.rng.random() < FALSE_ALARM_RATE) for x in alive}
+        alarms = {x.name: (self.rng.random() < self.a.false_alarm_rate) for x in alive}
         decisions = await asyncio.gather(*[self.decide(x, alarms[x.name], world) for x in alive])
         dmap = {d.nation: d for d in decisions}
 
@@ -299,6 +430,9 @@ class Simulation:
             if d.false_alarm and d.launch_on_warning_p is not None:
                 fired = self.rng.random() < d.launch_on_warning_p if self.mode == "sample" else d.launch_on_warning_p >= 0.5
                 events.append(f"{me.name} receives early-warning alert (false alarm)")
+                if fired and self.rng.random() >= self.a.alarm_uncorroborated:
+                    fired = False
+                    events.append(f"{me.name} cross-checks the alert with a second sensor and stands down")
                 if fired and d.target:
                     strikes.append((me, d.target, "launch on warning"))
                     continue
@@ -309,7 +443,7 @@ class Simulation:
                 me.history.append("built arms")
                 for o in alive:
                     if o is not me:
-                        o.tension[me.name] = min(1.0, o.tension[me.name] + 0.08)
+                        o.tension[me.name] = min(1.0, o.tension[me.name] + self.a.build_tension)
             elif d.action == "disarm":
                 me.warheads = max(0, int(me.warheads * 0.7))
                 me.history.append("disarmed partially")
@@ -343,9 +477,11 @@ class Simulation:
                 if vd and victim.second_strike:
                     ret = self.rng.random() < vd.retaliate_p if self.mode == "sample" else vd.retaliate_p >= 0.5
                     if ret:
-                        # second-strike forces survive; retaliate with what's left
+                        # survivable forces ride out the strike; retaliate with what is left
+                        lo, hi = self.a.survivable_fraction
+                        surviving = int(victim.warheads * self.rng.uniform(lo, hi))
                         victim.alive = True
-                        self._launch(victim, attacker.name, events, "retaliation")
+                        self._launch(victim, attacker.name, events, "retaliation", cap=surviving)
                         victim.alive = False
                 for ally_name in victim.allies:
                     ally = self._by(ally_name)

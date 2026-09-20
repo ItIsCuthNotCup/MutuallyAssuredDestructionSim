@@ -1,0 +1,1047 @@
+{
+  "meta": {
+    "ns": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      16,
+      24
+    ],
+    "runs": 8,
+    "turns": 25,
+    "mode": null,
+    "seed": 1,
+    "scenario": "historical",
+    "model": "jev-latest",
+    "jev_calls": 15152,
+    "input_tokens": 38973849,
+    "seconds": 164.6
+  },
+  "stats": [
+    {
+      "n": 0,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 0,
+          "seed": 1,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 2,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 3,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 4,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 5,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 6,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 7,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 0,
+          "seed": 8,
+          "turns_played": 1,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 1,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 1,
+          "seed": 1001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 1,
+          "seed": 1008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 2,
+          "seed": 2001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 2,
+          "seed": 2008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 3,
+          "seed": 3001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 3,
+          "seed": 3008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 4,
+          "seed": 4001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 4,
+          "seed": 4008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 6,
+          "seed": 6001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 6,
+          "seed": 6008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 8,
+          "seed": 8001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 8,
+          "seed": 8008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "runs": 8,
+      "p_any_launch": 0.0,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.0,
+      "mean_first_launch_turn": null,
+      "mean_warheads_detonated": 0.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.0,
+      "runs_detail": [
+        {
+          "n": 12,
+          "seed": 12001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 12,
+          "seed": 12008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 16,
+      "runs": 8,
+      "p_any_launch": 0.125,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.125,
+      "mean_first_launch_turn": 1.0,
+      "mean_warheads_detonated": 1.25,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.005681818181818182,
+      "runs_detail": [
+        {
+          "n": 16,
+          "seed": 16001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16003,
+          "turns_played": 25,
+          "any_launch": true,
+          "first_launch_turn": 1,
+          "world_destroyed": false,
+          "nations_destroyed": 1,
+          "warheads_detonated": 10,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16006,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 16,
+          "seed": 16008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    },
+    {
+      "n": 24,
+      "runs": 8,
+      "p_any_launch": 0.125,
+      "p_world_destroyed": 0.0,
+      "p_false_alarm_launch": 0.0,
+      "mean_nations_destroyed": 0.125,
+      "mean_first_launch_turn": 1.0,
+      "mean_warheads_detonated": 5.0,
+      "ci95_world_destroyed": 0.0,
+      "per_turn_hazard": 0.005681818181818182,
+      "runs_detail": [
+        {
+          "n": 24,
+          "seed": 24001,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24002,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24003,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24004,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24005,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24006,
+          "turns_played": 25,
+          "any_launch": true,
+          "first_launch_turn": 1,
+          "world_destroyed": false,
+          "nations_destroyed": 1,
+          "warheads_detonated": 40,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24007,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        },
+        {
+          "n": 24,
+          "seed": 24008,
+          "turns_played": 25,
+          "any_launch": false,
+          "first_launch_turn": null,
+          "world_destroyed": false,
+          "nations_destroyed": 0,
+          "warheads_detonated": 0,
+          "launch_on_false_alarm": false
+        }
+      ]
+    }
+  ]
+}
