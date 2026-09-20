@@ -95,8 +95,11 @@
   .legend i { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
 
   /* gauge */
-  .gauge { display:grid; place-items:center; }
-  .gauge .num { position:absolute; top:52%; text-align:center; }
+  .gauge { display:flex; flex-direction:column; }
+  .gauge .arc { position:relative; flex:1; display:flex; align-items:center; justify-content:center; min-height:140px; }
+  .gauge canvas { width:220px; max-width:100%; height:auto; display:block; }
+  .gauge .num { position:absolute; left:0; right:0; top:50%; transform:translateY(-4px); text-align:center; pointer-events:none; }
+  .gauge-controls { grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); }
   .gauge .num b { font-size:36px; font-weight:800; letter-spacing:-1px; }
   .gauge .num small { color:var(--muted); font-size:12px; display:block; }
 
@@ -128,7 +131,9 @@
   table.res th, table.res td { text-align:left; padding:7px 6px; border-bottom:1px solid var(--line); }
   table.res th { color:var(--muted); font-weight:600; font-size:11.5px; }
   footer { color:var(--muted); font-size:12px; text-align:center; margin-top:30px; }
-  @media (max-width: 980px) { .g-hero, .g-3, .g-2 { grid-template-columns:1fr; } .steps { grid-template-columns:1fr; } }
+  @media (max-width: 1400px) { .g-hero { grid-template-columns: 1fr 1.25fr; } }
+  @media (max-width: 1180px) { .g-hero { grid-template-columns:1fr; } .g-3 { grid-template-columns:1fr 1fr; } .g-3 > :first-child { grid-column:1 / -1; } }
+  @media (max-width: 980px) { .g-hero, .g-3, .g-2 { grid-template-columns:1fr; } .g-3 > :first-child { grid-column:auto; } .steps { grid-template-columns:1fr; } }
   @media (max-width: 640px) {
     .tabs { overflow-x:auto; max-width:100%; }
     .tabs a { padding:8px 11px; white-space:nowrap; }
@@ -167,11 +172,13 @@
         <div class="step"><b><i style="background:var(--yellow)"></i>2 · Jev plays every leader</b>Each year every leader chooses: hold, talk, build, disarm or fire.</div>
         <div class="step"><b><i style="background:var(--orange)"></i>3 · We count the endings</b>How often does someone fire? How often does everyone die?</div>
       </div>
-      <div class="grid g-2 mt">
-        <div class="panel gauge" style="padding:14px 14px 6px;background:var(--panel2)">
-          <div class="kicker" style="align-self:flex-start">Doomsday gauge <span class="help" data-tip="How often the world ended in the simulated runs at the number of countries you selected. 0 = never, 100 = every single time.">?</span></div>
-          <canvas id="gauge" width="220" height="130"></canvas>
-          <div class="num"><b id="gaugeNum">—</b><small id="gaugeLbl">chance the world ends</small></div>
+      <div class="grid gauge-controls mt">
+        <div class="panel gauge" style="padding:14px 14px 10px;background:var(--panel2)">
+          <div class="kicker">Doomsday gauge <span class="help" data-tip="How often the world ended in the simulated runs at the number of countries you selected. 0 = never, 100 = every single time.">?</span></div>
+          <div class="arc">
+            <canvas id="gauge" width="220" height="130"></canvas>
+            <div class="num"><b id="gaugeNum">—</b><small id="gaugeLbl">chance the world ends</small></div>
+          </div>
         </div>
         <div class="panel controls" style="padding:14px;background:var(--panel2)">
           <div class="kicker">Countries with nukes</div>
